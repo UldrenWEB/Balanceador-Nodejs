@@ -1,0 +1,23 @@
+syntax = "proto3";
+package crud;
+service Crud {
+    rpc InsertRegister (RegisterRequest) returns (RegisterReply) {}
+    rpc StatisticsComputer (StatisticsComputerRequest) returns (StatisticsReply) {}
+}
+message RegisterRequest {
+    string name = 1;
+    string lastname = 2;
+    int32 age = 3;
+    string sex = 4;
+}
+message RegisterReply {
+    string message = 1;
+}
+//Repuesta de la estadistica
+message StatisticsReply {
+    string cpuUsage = 1;
+    string ramUsage = 2;
+}
+//Sin parametros
+message StatisticsComputerRequest { 
+}
