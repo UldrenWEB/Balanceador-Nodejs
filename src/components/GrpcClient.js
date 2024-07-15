@@ -5,7 +5,7 @@ import createServiceLogger from "../utils/logger.js";
 
 const config = extractJSON({ path: "../configs/grpcConfig.json" });
 
-class MicroService {
+class GrpcClient {
   constructor({ protoBuffer, host }) {
     this.packageDefinition;
     this.host = host;
@@ -52,4 +52,4 @@ class MicroService {
   };
 }
 
-export default MicroService;
+export default GrpcClient;
