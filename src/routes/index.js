@@ -1,5 +1,5 @@
 import ExpressAdapter from "../adapters/ExpressAdapter.js";
-import { pruebaRouter } from "./prueba.js";
+import { toProcessRouter } from "./toProcess.js";
 
 const adapter = new ExpressAdapter({});
 
@@ -7,9 +7,9 @@ export const indexRouter = () => {
   const iRouter = adapter.createRouter();
 
   adapter.setRouter({
-    route: "/prueba",
+    route: "/toProcess",
     router: iRouter,
-    callbackRouter: pruebaRouter(),
+    callbackRouter: toProcessRouter(),
   });
 
   return iRouter;

@@ -5,6 +5,13 @@ class BalancerController {
     this.#initializeMetrics();
   }
 
+  static getInstance(microservices) {
+    if (!BalancerController.instance) {
+      BalancerController.instance = new BalancerController(microservices);
+    }
+    return BalancerController.instance;
+  }
+
   #initializeMetrics = () => {
     this.microservices.forEach((service) => {
       this.metrics.set(service.host, {
@@ -18,23 +25,35 @@ class BalancerController {
   };
 
   updateMetrics = async () => {
-    for (const service of this.microservices) {
-      const callback = (error, response) => {
-        if (error) return console.error(`Ha salido de actualizar ${error}`);
-        const serviceMetrics = this.metrics.get(service.host);
-        serviceMetrics.cpuUsage = response.cpuUsage;
-        serviceMetrics.ramUsage = response.ramUsage;
-        this.metrics.set(service.host, serviceMetrics);
-      };
+    const updatePromises = this.microservices.map((service) => {
+      return new Promise((resolve, reject) => {
+        const callback = (error, response) => {
+          if (error) {
+            console.error(`Error al actualizar: ${error}`);
+            return reject(error);
+          }
+          const serviceMetrics = this.metrics.get(service.host);
 
-      await service.executeMethod({
-        callback,
-        method: "StatisticsComputer",
-        packageName: "crud",
-        service: "Crud",
-        params: {},
+          serviceMetrics.cpuUsage =
+            parseFloat(response.cpuUsage.replace("%", "")) / 100;
+          serviceMetrics.ramUsage =
+            parseFloat(response.ramUsage.replace("%", "")) / 100;
+
+          this.metrics.set(service.host, serviceMetrics);
+          resolve();
+        };
+
+        service.executeMethod({
+          callback,
+          method: "StatisticsComputer",
+          packageName: "crud",
+          service: "Crud",
+          params: {},
+        });
       });
-    }
+    });
+
+    await Promise.all(updatePromises);
   };
 
   calculateEffectiveness(serviceMetrics) {
@@ -53,7 +72,7 @@ class BalancerController {
         0.25 * effectiveness +
         0.2 * (1 - metrics.activeRequests);
 
-      if (score > highestScore) {
+      if (score > highestScore && metrics.activeRequests === 0) {
         highestScore = score;
         selectedService = host;
       }
@@ -65,18 +84,27 @@ class BalancerController {
   handleRequest = async (method, params, callback) => {
     await this.updateMetrics();
     const selectedService = this.selectMicroservice();
+    console.log("Selecciono:", selectedService);
     const service = this.microservices.find((s) => s.host === selectedService);
     const serviceMetrics = this.metrics.get(service.host);
     serviceMetrics.totalRequests += 1;
     serviceMetrics.activeRequests += 1;
+
+    this.metrics.set(service.host, serviceMetrics);
     service.executeMethod({
-      callback,
+      callback: (error, response) => {
+        if (error) return console.error(`Error ejecutando ${method}: ${error}`);
+        serviceMetrics.activeRequests -= 1;
+        serviceMetrics.completedRequests += 1;
+        this.metrics.set(service.host, serviceMetrics);
+        callback(error, response);
+      },
       method,
       params,
       packageName: "crud",
       service: "Crud",
     });
-    serviceMetrics.activeRequests -= 1;
-    serviceMetrics.completedRequests += 1;
   };
 }
+
+export default BalancerController;

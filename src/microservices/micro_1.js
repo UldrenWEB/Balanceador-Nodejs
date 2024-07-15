@@ -7,7 +7,14 @@ import { PROTO_PATH as path } from "../protos/index.js";
 const PROTO_PATH = path();
 const host = extractJSON({ path: "../configs/hosts.json" }).host_1;
 
-const InsertRegister = async (call, callback) => {};
+const InsertRegister = async (call, callback) => {
+  const param = call.request;
+  setTimeout(() => {
+    callback(null, {
+      message: `Los parametros enviados son: Name: ${param.name}, Lastname: ${param.lastname}, edad: ${param.age} y sexo: ${param.sex}`,
+    });
+  }, 10000);
+};
 
 const Statistics = async (call, callback) => {
   const cpuUsage = os.loadavg()[0] / os.cpus().length;
@@ -18,7 +25,7 @@ const Statistics = async (call, callback) => {
 
   callback(null, {
     cpuUsage: `${cpuUsage}%`,
-    ramUsage: `${ramUsage}`,
+    ramUsage: `100%`,
   });
 };
 
