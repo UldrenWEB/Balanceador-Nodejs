@@ -1,5 +1,3 @@
-// File path: balancer.js
-
 class Balancer {
   constructor({ microservices, packageName, serviceName, methodName, props }) {
     this.microservices = microservices;

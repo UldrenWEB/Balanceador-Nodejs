@@ -25,7 +25,7 @@ const Statistics = async (call, callback) => {
 
   callback(null, {
     cpuUsage: `${cpuUsage}%`,
-    ramUsage: `100%`,
+    ramUsage: `0%`,
   });
 };
 
