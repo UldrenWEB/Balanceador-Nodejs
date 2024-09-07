@@ -1,4 +1,3 @@
-//Mi primer microservicio
 import GrpcServer from "../components/GrpcServer.js";
 import extractJSON from "../utils/extractJSON.js";
 import os from "node:os";
@@ -16,7 +15,7 @@ const InsertRegister = async (call, callback) => {
   }, 10000);
 };
 
-const Statistics = async (call, callback) => {
+const Statistics = async (_call, callback) => {
   const cpuUsage = os.loadavg()[0] / os.cpus().length;
   const ramUsage = `${(
     ((os.totalmem() - os.freemem()) / os.totalmem()) *

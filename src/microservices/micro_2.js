@@ -1,4 +1,3 @@
-//Mi primer microservicio
 import GrpcServer from "../components/GrpcServer.js";
 import extractJSON from "../utils/extractJSON.js";
 import os from "node:os";
@@ -13,7 +12,7 @@ const InsertRegister = async (call, callback) => {
     callback(null, {
       message: `Los parametros enviados son: Name: ${param.name}, Lastname: ${param.lastname}, edad: ${param.age} y sexo: ${param.sex}`,
     });
-  }, 10000);
+  }, 0);
 };
 
 const Statistics = async (call, callback) => {

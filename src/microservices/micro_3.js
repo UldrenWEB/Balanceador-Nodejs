@@ -1,4 +1,3 @@
-//Mi primer microservicio
 import GrpcServer from "../components/GrpcServer.js";
 import extractJSON from "../utils/extractJSON.js";
 import os from "node:os";

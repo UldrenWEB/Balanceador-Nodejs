@@ -41,7 +41,6 @@ class GRPCServer {
           return;
         }
         console.log(`Server running at ${this.host}`);
-        this.server.start();
       }
     );
   }

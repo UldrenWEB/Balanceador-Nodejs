@@ -25,7 +25,6 @@ class ToProcessController {
     try {
       await balancer.handleRequest(method, params, callback);
     } catch (err) {
-      console.log("Aqui error", err);
       res.status(500).json({ error: err.message });
     }
   };
